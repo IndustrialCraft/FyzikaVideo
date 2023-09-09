@@ -97,3 +97,20 @@ class Sila(Scene):
         force_formula.shift(RIGHT*3.5 + DOWN*0.75)
         self.add(box_large,box_small,box_large_mass,box_small_mass,variable_force,force_formula,box_large_acceleration,box_small_acceleration)
         self.play(box_large.animate.shift(RIGHT*5),box_small.animate.shift(RIGHT*10),run_time=5,rate_func=rush_into)
+
+class DostredivaSila(Scene):
+    def construct(self):
+        center = Dot(point=ORIGIN,radius=0.2)
+        rotating_body = Circle(color=WHITE,fill_color=WHITE,fill_opacity=1,radius=0.5).shift(UP*3)
+        force_arrow = Arrow(start=UP*3,end=UP*1)
+        variable_velocity = Variable(1,"v").shift(DOWN)
+        variable_force = Variable(0,"F_D = \dfrac{mv^2}{r}").next_to(variable_velocity,DOWN)
+        variable_force.add_updater(lambda v: v.tracker.set_value(variable_velocity.tracker.get_value()**2))
+        self.add(center,rotating_body,force_arrow,variable_velocity,variable_force)
+        self.play(Rotate(rotating_body,angle=2*PI,about_point=ORIGIN),Rotate(force_arrow,angle=2*PI,about_point=ORIGIN),rate_func=linear,run_time=4)
+        variable_velocity.tracker.set_value(2)
+        self.remove(force_arrow)
+        force_arrow = Arrow(start=UP*3,end=ORIGIN)
+        self.add(force_arrow)
+        self.play(Rotate(rotating_body,angle=2*PI,about_point=ORIGIN),Rotate(force_arrow,angle=2*PI,about_point=ORIGIN),rate_func=linear,run_time=2)
+
