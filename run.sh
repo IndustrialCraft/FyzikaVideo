@@ -1,1 +1,2 @@
-manim -pql video.py RPP
+#!/bin/sh
+manim -pql video.py $1

@@ -53,5 +53,29 @@ class RPP(Scene):
         self.add(distance_axes_labels,distance_axes,distance_graph,variable_time,variable_velocity,variable_distance)
         self.play(Create(distance_graph_run),ball.animate().shift(RIGHT*10),variable_time.tracker.animate.set_value(animation_length), variable_distance.tracker.animate.set_value(initial_speed*animation_length), run_time=animation_length, rate_func=linear)
          
-
-
+class RZP(Scene):
+    def construct(self):
+        initial_speed = 3
+        acceleration = 1
+        animation_length = 5
+        distance_axes = Axes(x_range=[0,animation_length,1],y_range=[0,initial_speed+acceleration*animation_length,1],axis_config={"include_numbers": True},tips=False)
+        distance_axes_labels = distance_axes.get_axis_labels(y_label='v[m \cdot s^{-1}]', x_label='t[s]').set_color(WHITE)
+        distance_graph = distance_axes.plot(lambda x: initial_speed+acceleration*x, x_range=(0,animation_length))
+        distance_graph_run = distance_graph.copy().set_color(RED)
+        distance_group = Group(distance_axes,distance_graph,distance_graph_run)
+        distance_group.shift(RIGHT)
+        variable_time = Variable(0,"t")
+        variable_velocity = Variable(initial_speed,"v_0")
+        variable_velocity.next_to(variable_time,DOWN)
+        variable_acceleration = Variable(acceleration,"a")
+        variable_acceleration.next_to(variable_velocity,DOWN)
+        variable_distance = Variable(0, "s = v_0 \cdot t + \dfrac{1}{2} a \cdot t^2")
+        variable_distance.next_to(variable_acceleration,DOWN)
+        def distance_updater(v):
+            time = variable_time.tracker.get_value() 
+            v.tracker.set_value(time*initial_speed+0.5*acceleration*time*time)
+        variable_distance.add_updater(distance_updater)
+        ball = Circle(radius=0.5,fill_color=RED,fill_opacity=1)
+        ball.add_updater(lambda b: b.move_to(LEFT*5+RIGHT*variable_distance.tracker.get_value()*(10/(animation_length*initial_speed+0.5*acceleration*animation_length**2))))
+        self.add(distance_axes_labels,distance_axes,distance_graph,variable_time,variable_velocity,variable_acceleration,variable_distance,ball)
+        self.play(Create(distance_graph_run),variable_time.tracker.animate.set_value(animation_length),run_time=animation_length,rate_func=linear)
