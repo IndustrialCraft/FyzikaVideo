@@ -79,3 +79,21 @@ class RZP(Scene):
         ball.add_updater(lambda b: b.move_to(LEFT*5+RIGHT*variable_distance.tracker.get_value()*(10/(animation_length*initial_velocity+0.5*acceleration*animation_length**2))))
         self.add(distance_axes_labels,distance_axes,distance_graph,variable_time,variable_velocity,variable_acceleration,variable_distance,ball)
         self.play(Create(distance_graph_run),variable_time.tracker.animate.set_value(animation_length),run_time=animation_length,rate_func=linear)
+
+class Sila(Scene):
+    def construct(self):
+        box_large = Rectangle(color=RED,fill_color=RED,fill_opacity=1,width=3,height=3).shift(LEFT*5+UP*2)
+        box_large_mass = Text("m = 2")
+        box_large_mass.add_updater(lambda b: b.move_to(box_large.get_center() + UP*0.5))
+        box_large_acceleration = Text("a = 0.5")
+        box_large_acceleration.add_updater(lambda b: b.move_to(box_large.get_center() + DOWN*0.5))
+        box_small = Rectangle(color=RED,fill_color=RED,fill_opacity=1,width=2,height=2).shift(LEFT*5+DOWN*3)
+        box_small_mass = Text("m = 1")
+        box_small_mass.add_updater(lambda b: b.move_to(box_small.get_center() + UP*0.5))
+        box_small_acceleration = Text("a = 1")
+        box_small_acceleration.add_updater(lambda b: b.move_to(box_small.get_center() + DOWN*0.5))
+        variable_force = Variable(1,"F").shift(LEFT*5 + DOWN*0.75)
+        force_formula = MathTex("F = m \cdot a \Rightarrow a = \dfrac{F}{m}")
+        force_formula.shift(RIGHT*3.5 + DOWN*0.75)
+        self.add(box_large,box_small,box_large_mass,box_small_mass,variable_force,force_formula,box_large_acceleration,box_small_acceleration)
+        self.play(box_large.animate.shift(RIGHT*5),box_small.animate.shift(RIGHT*10),run_time=5,rate_func=rush_into)
