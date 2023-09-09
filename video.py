@@ -109,8 +109,6 @@ class DostredivaSila(Scene):
         self.add(center,rotating_body,force_arrow,variable_velocity,variable_force)
         self.play(Rotate(rotating_body,angle=2*PI,about_point=ORIGIN),Rotate(force_arrow,angle=2*PI,about_point=ORIGIN),rate_func=linear,run_time=4)
         variable_velocity.tracker.set_value(2)
-        self.remove(force_arrow)
-        force_arrow = Arrow(start=UP*3,end=ORIGIN)
-        self.add(force_arrow)
+        force_arrow.put_start_and_end_on(UP*3,ORIGIN)
         self.play(Rotate(rotating_body,angle=2*PI,about_point=ORIGIN),Rotate(force_arrow,angle=2*PI,about_point=ORIGIN),rate_func=linear,run_time=2)
 
