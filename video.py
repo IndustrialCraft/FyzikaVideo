@@ -1,39 +1,6 @@
 from manim import *
 import math
 
-class Video(Scene):
-    def construct(self):
-        circle = Circle()  # create a circle
-        square = Square()  # create a square
-    
-        self.play(Create(square))  # show the square on screen
-        self.play(square.animate.rotate(PI / 4))  # rotate the square
-        logo_black = "#343434"
-        ds_m = MathTex(r"\mathbb{M}", fill_color=logo_black).scale(7)
-        ds_m.shift(2.25 * LEFT + 1.5 * UP)
-        self.add(ds_m)
-        ax = Axes(
-            x_range=[0, 10, 1],
-            y_range=[-2, 6, 1],
-            tips=False,
-            axis_config={"include_numbers": True},
-            y_axis_config={"scaling": LogBase(custom_labels=True)},
-        )
-
-        # x_min must be > 0 because log is undefined at 0.
-        graph = ax.plot(lambda x: x ** 2, x_range=[1, 10], use_smoothing=False)
-        area = ax.get_area(graph=graph, x_range=(1,10))
-        area.set_fill(BLUE)
-        self.add(ax)
-        self.play(Create(graph,run_time=5),Write(area,run_time=5))
-        self.play(
-            ReplacementTransform(square, circle)
-        )  # transform the square into a circle
-        self.play(
-            circle.animate.set_fill(PINK, opacity=0.5)
-        )  # color the circle on screen
-        self.wait()
-
 class RPP(Scene):
     def construct(self):
         initial_velocity = 3
@@ -114,16 +81,21 @@ class DostredivaSila(Scene):
         self.play(Rotate(rotating_body,angle=2*PI,about_point=ORIGIN),Rotate(force_arrow,angle=2*PI,about_point=ORIGIN),rate_func=linear,run_time=2)
 class Trenie(Scene):
     def construct(self):
-        angle = Variable(0, r"\alpha")
-        friction_coefficient = Variable(1., "f").next_to(angle,DOWN)
+        angle = Variable(0, r"\alpha").move_to(UP*3)
+        friction_coefficient = Variable(0.41, "f").next_to(angle,DOWN)
         force_gravity = Variable(9.81, "F_g").next_to(friction_coefficient,DOWN)
-        force_1 = Variable(0, r"F_1 = F_g \cdot sin \alpha").next_to(force_gravity,DOWN)
-        force_N = Variable(0,r"F_N = F_g \cdot cos \alpha").next_to(force_1,DOWN)
-        force_T = Variable(0,r"F_t = F_N * f").next_to(force_N,DOWN)
+        force_1 = Variable(0, r"F_1 = F_g \cdot sin \: \alpha").move_to(DOWN)
+        force_N = Variable(0,r"F_N = F_g \cdot cos \: \alpha").next_to(force_1,DOWN)
+        force_T = Variable(0,r"F_t = F_N \cdot f").next_to(force_N,DOWN)
         force_1.add_updater(lambda f: f.tracker.set_value(force_gravity.tracker.get_value()*math.sin(math.radians(angle.tracker.get_value()))))
         force_N.add_updater(lambda f: f.tracker.set_value(force_gravity.tracker.get_value()*math.cos(math.radians(angle.tracker.get_value()))))
-        force_T.add_updater(lambda f: f.tracker.set_value(force_gravity.tracker.get_value()))
-        plane = Line(start=ORIGIN,end=ORIGIN)
-        plane.add_updater(lambda p: p.put_start_and_end_on(ORIGIN,3*RIGHT+3*UP*math.sin(math.radians(angle.tracker.get_value()))))
-        self.add(angle,plane,force_gravity,force_1,force_N)
-        self.play(angle.tracker.animate.set_value(45), run_time=5, rate_func=linear)
+        force_T.add_updater(lambda f: f.tracker.set_value(force_N.tracker.get_value() * 0.41390728476))
+        plane = Line(start=LEFT,end=RIGHT*3)
+        compare_text = MathTex(r"F_1 < F_t").next_to(force_T,DOWN)
+        box = Rectangle(width=1,height=1).shift(UP*0.5+RIGHT*2.5)
+        self.add(angle,plane,force_gravity,force_1,force_N,force_T,friction_coefficient,box,compare_text)
+        self.play(angle.tracker.animate.set_value(45/2),Rotate(plane,angle=PI/8,about_point=LEFT), Rotate(box,angle=PI/8,about_point=LEFT), run_time=5, rate_func=linear)
+        self.remove(compare_text)
+        compare_text = MathTex(r"F_1 = F_t").next_to(force_T,DOWN)
+        self.add(compare_text)
+        self.play(box.animate.move_to(LEFT+UP*0.5),run_time=5, rate_func=linear)
