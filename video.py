@@ -1,4 +1,5 @@
 from manim import *
+import math
 
 class Video(Scene):
     def construct(self):
@@ -111,4 +112,18 @@ class DostredivaSila(Scene):
         variable_velocity.tracker.set_value(2)
         force_arrow.put_start_and_end_on(UP*3,ORIGIN)
         self.play(Rotate(rotating_body,angle=2*PI,about_point=ORIGIN),Rotate(force_arrow,angle=2*PI,about_point=ORIGIN),rate_func=linear,run_time=2)
-
+class Trenie(Scene):
+    def construct(self):
+        angle = Variable(0, r"\alpha")
+        friction_coefficient = Variable(1., "f").next_to(angle,DOWN)
+        force_gravity = Variable(9.81, "F_g").next_to(friction_coefficient,DOWN)
+        force_1 = Variable(0, r"F_1 = F_g \cdot sin \alpha").next_to(force_gravity,DOWN)
+        force_N = Variable(0,r"F_N = F_g \cdot cos \alpha").next_to(force_1,DOWN)
+        force_T = Variable(0,r"F_t = F_N * f").next_to(force_N,DOWN)
+        force_1.add_updater(lambda f: f.tracker.set_value(force_gravity.tracker.get_value()*math.sin(math.radians(angle.tracker.get_value()))))
+        force_N.add_updater(lambda f: f.tracker.set_value(force_gravity.tracker.get_value()*math.cos(math.radians(angle.tracker.get_value()))))
+        force_T.add_updater(lambda f: f.tracker.set_value(force_gravity.tracker.get_value()))
+        plane = Line(start=ORIGIN,end=ORIGIN)
+        plane.add_updater(lambda p: p.put_start_and_end_on(ORIGIN,3*RIGHT+3*UP*math.sin(math.radians(angle.tracker.get_value()))))
+        self.add(angle,plane,force_gravity,force_1,force_N)
+        self.play(angle.tracker.animate.set_value(45), run_time=5, rate_func=linear)
