@@ -12,9 +12,12 @@ class RPP(Scene):
         distance_group = Group(distance_axes,distance_graph,distance_graph_run)
         #distance_group.shift(RIGHT)
         variable_time = Variable(0,"t")
+        variable_time.value.unit = r"s"
         variable_velocity = Variable(initial_velocity,"v")
+        variable_velocity.value.unit = r"m \cdot s^{-1}"
         variable_velocity.next_to(variable_time,DOWN)
         variable_distance = Variable(0, "s = v \cdot t")
+        variable_distance.value.unit = r"m"
         variable_distance.next_to(variable_velocity,DOWN)
         ball = Circle(radius=0.5,fill_color=RED,fill_opacity=1) 
         ball.shift(LEFT*5)
@@ -34,11 +37,15 @@ class RZP(Scene):
         distance_group = Group(distance_axes,distance_graph,distance_graph_run)
         #distance_group.shift(RIGHT)
         variable_time = Variable(0,"t")
+        variable_time.value.unit = r"s"
         variable_velocity = Variable(initial_velocity,"v_0")
+        variable_velocity.value.unit = r"m \cdot s^{-1}"
         variable_velocity.next_to(variable_time,DOWN)
         variable_acceleration = Variable(acceleration,"a")
+        variable_acceleration.value.unit = r"m \cdot s^{-2}"
         variable_acceleration.next_to(variable_velocity,DOWN)
         variable_distance = Variable(0, "s = v_0 \cdot t + \dfrac{1}{2} a \cdot t^2")
+        variable_distance.value.unit = r"m"
         variable_distance.next_to(variable_acceleration,DOWN)
         def distance_updater(v):
             time = variable_time.tracker.get_value() 
