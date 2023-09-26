@@ -18,6 +18,7 @@ class RPP(Scene):
         variable_distance.next_to(variable_velocity,DOWN)
         ball = Circle(radius=0.5,fill_color=RED,fill_opacity=1) 
         ball.shift(LEFT*5)
+        
         self.add(distance_axes_labels,distance_axes,distance_graph,variable_time,variable_velocity,variable_distance)
         self.play(Create(distance_graph_run),ball.animate().shift(RIGHT*10),variable_time.tracker.animate.set_value(animation_length), variable_distance.tracker.animate.set_value(initial_velocity*animation_length), run_time=animation_length, rate_func=linear)
          
@@ -47,20 +48,20 @@ class RZP(Scene):
         ball.add_updater(lambda b: b.move_to(LEFT*5+RIGHT*variable_distance.tracker.get_value()*(10/(animation_length*initial_velocity+0.5*acceleration*animation_length**2))))
         self.add(distance_axes_labels,distance_axes,distance_graph,variable_time,variable_velocity,variable_acceleration,variable_distance,ball)
         self.play(Create(distance_graph_run),variable_time.tracker.animate.set_value(animation_length),run_time=animation_length,rate_func=linear)
-
 class Sila(Scene):
     def construct(self):
-        box_large = Rectangle(color=RED,fill_color=RED,fill_opacity=1,width=3,height=3).shift(LEFT*5+UP*2)
-        box_large_mass = Text("m = 2")
+        box_large = Rectangle(color=RED,fill_color=RED,fill_opacity=1,width=3.5,height=3.5).shift(LEFT*5+UP*2)
+        box_large_mass = MathTex("m = 2kg")
         box_large_mass.add_updater(lambda b: b.move_to(box_large.get_center() + UP*0.5))
-        box_large_acceleration = Text("a = 0.5")
+        box_large_acceleration = MathTex("a = 0.5m \cdot s^{-2}")
         box_large_acceleration.add_updater(lambda b: b.move_to(box_large.get_center() + DOWN*0.5))
-        box_small = Rectangle(color=RED,fill_color=RED,fill_opacity=1,width=2,height=2).shift(LEFT*5+DOWN*3)
-        box_small_mass = Text("m = 1")
+        box_small = Rectangle(color=RED,fill_color=RED,fill_opacity=1,width=3,height=2.5).shift(LEFT*5+DOWN*3)
+        box_small_mass = MathTex("m = 1kg")
         box_small_mass.add_updater(lambda b: b.move_to(box_small.get_center() + UP*0.5))
-        box_small_acceleration = Text("a = 1")
+        box_small_acceleration = MathTex("a = 1m \cdot s^{-2}")
         box_small_acceleration.add_updater(lambda b: b.move_to(box_small.get_center() + DOWN*0.5))
         variable_force = Variable(1,"F").shift(LEFT*5 + DOWN*0.75)
+        variable_force.value.unit = r"N"
         force_formula = MathTex("F = m \cdot a \Rightarrow a = \dfrac{F}{m}")
         force_formula.shift(RIGHT*3.5 + DOWN*0.75)
         self.add(box_large,box_small,box_large_mass,box_small_mass,variable_force,force_formula,box_large_acceleration,box_small_acceleration)
@@ -69,24 +70,35 @@ class Sila(Scene):
 class DostredivaSila(Scene):
     def construct(self):
         center = Dot(point=ORIGIN,radius=0.2)
-        rotating_body = Circle(color=WHITE,fill_color=WHITE,fill_opacity=1,radius=0.5).shift(UP*3)
-        force_arrow = Arrow(start=UP*3,end=UP*1)
-        variable_velocity = Variable(1,"v").shift(DOWN)
-        variable_force = Variable(0,"F_D = \dfrac{mv^2}{r}").next_to(variable_velocity,DOWN)
+        rotating_body = Circle(color=WHITE,radius=0.5).shift(UP*3)
+        force_arrow = Arrow(start=UP*2.75,end=UP*1)
+        variable_mass = Variable(1,"m").shift(DOWN)
+        variable_mass.value.unit = r"kg"
+        variable_velocity = Variable(1,"v").next_to(variable_mass,DOWN)
+        variable_velocity.value.unit = r"m \cdot s^{-1}"
+        variable_radius = Variable(1,"r").next_to(variable_velocity,DOWN)
+        variable_radius.value.unit = r"m"
+        variable_force = Variable(0,"F_D = \dfrac{mv^2}{r}").next_to(variable_radius,DOWN)
+        variable_force.value.unit = r"N"
         variable_force.add_updater(lambda v: v.tracker.set_value(variable_velocity.tracker.get_value()**2))
-        self.add(center,rotating_body,force_arrow,variable_velocity,variable_force)
+        self.add(center,rotating_body,force_arrow,variable_mass,variable_velocity,variable_radius,variable_force)
         self.play(Rotate(rotating_body,angle=2*PI,about_point=ORIGIN),Rotate(force_arrow,angle=2*PI,about_point=ORIGIN),rate_func=linear,run_time=4)
         variable_velocity.tracker.set_value(2)
-        force_arrow.put_start_and_end_on(UP*3,ORIGIN)
+        force_arrow.put_start_and_end_on(UP*2.75,ORIGIN)
         self.play(Rotate(rotating_body,angle=2*PI,about_point=ORIGIN),Rotate(force_arrow,angle=2*PI,about_point=ORIGIN),rate_func=linear,run_time=2)
 class Trenie(Scene):
     def construct(self):
-        angle = Variable(0, r"\alpha").move_to(UP*3)
+        angle = Variable(0, r"\alpha").move_to(UP*3.5)
+        angle.value.unit = r"^\circ"
         friction_coefficient = Variable(0.41, "f").next_to(angle,DOWN)
         force_gravity = Variable(9.81, "F_g").next_to(friction_coefficient,DOWN)
+        force_gravity.value.unit = "N"
         force_1 = Variable(0, r"F_1 = F_g \cdot sin \: \alpha").move_to(DOWN)
+        force_1.value.unit = "N"
         force_N = Variable(0,r"F_N = F_g \cdot cos \: \alpha").next_to(force_1,DOWN)
+        force_N.value.unit = "N"
         force_T = Variable(0,r"F_t = F_N \cdot f").next_to(force_N,DOWN)
+        force_T.value.unit = "N"
         force_1.add_updater(lambda f: f.tracker.set_value(force_gravity.tracker.get_value()*math.sin(math.radians(angle.tracker.get_value()))))
         force_N.add_updater(lambda f: f.tracker.set_value(force_gravity.tracker.get_value()*math.cos(math.radians(angle.tracker.get_value()))))
         force_T.add_updater(lambda f: f.tracker.set_value(force_N.tracker.get_value() * 0.41390728476))
@@ -99,3 +111,31 @@ class Trenie(Scene):
         compare_text = MathTex(r"F_1 = F_t").next_to(force_T,DOWN)
         self.add(compare_text)
         self.play(box.animate.move_to(LEFT+UP*0.5),run_time=5, rate_func=linear)
+class Energia(Scene):
+    def construct(self):
+        pendulum = Circle(radius=0.5,fill_color=RED,fill_opacity=1).shift(UP*2)
+        line = Line(start=UP*4,end=ORIGIN)
+        pendulum.rotate(angle=PI/3,about_point=UP*4)
+        line.add_updater(lambda l:line.put_start_and_end_on(UP*4,pendulum.get_center()))
+        mass = Variable(1,"m").shift(UP*1.5)
+        mass.value.unit = "kg"
+        acceleration_gravity = Variable(9.81,"g").next_to(mass,DOWN)
+        acceleration_gravity.value.unit = "m \cdot s^{-2}"
+        height = Variable(0,"h").next_to(acceleration_gravity,DOWN)
+        height.value.unit = "m"
+        height.add_updater(lambda h:h.tracker.set_value(pendulum.get_center()[1]-2))
+        velocity = Variable(0,"v").next_to(height,DOWN)
+        velocity.value.unit = "m \cdot s^{-1}"
+        energy_potential = Variable(9.81,"E_p = m \cdot g \cdot h").next_to(velocity,DOWN)
+        energy_potential.value.unit = "J"
+        energy_potential.add_updater(lambda e:e.tracker.set_value(height.tracker.get_value()*9.81))
+        energy_kinetic = Variable(0,"E_k = \dfrac{1}{2}mv^2").next_to(energy_potential,DOWN)
+        energy_kinetic.value.unit = "J"
+        energy_kinetic.add_updater(lambda e:e.tracker.set_value((1-height.tracker.get_value())*9.81))
+        velocity.add_updater(lambda v:v.tracker.set_value(math.sqrt(energy_kinetic.tracker.get_value()*2)))
+        energy = Variable(9.81,"E = E_p + E_k").next_to(energy_kinetic,DOWN)
+        energy.value.unit = "J"
+        self.add(pendulum,line,mass,mass,acceleration_gravity,height,energy_potential,energy_kinetic,energy,velocity)
+        for _ in range(0,2):
+            self.play(Rotate(pendulum,angle=-PI/3*2,about_point=UP*4),run_time=2,rate_func=smooth)
+            self.play(Rotate(pendulum,angle=PI/3*2,about_point=UP*4),run_time=2,rate_func=smooth)
