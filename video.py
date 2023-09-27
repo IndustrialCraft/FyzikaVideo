@@ -13,7 +13,7 @@ class RPP(Scene):
         #distance_group.shift(RIGHT)
         variable_time = Variable(0,"t")
         variable_time.value.unit = r"s"
-        variable_velocity = Variable(initial_velocity,"v")
+        variable_velocity = Variable(initial_velocity,"v",num_decimal_places=0)
         variable_velocity.value.unit = r"m \cdot s^{-1}"
         variable_velocity.next_to(variable_time,DOWN)
         variable_distance = Variable(0, "s = v \cdot t")
@@ -38,10 +38,10 @@ class RZP(Scene):
         #distance_group.shift(RIGHT)
         variable_time = Variable(0,"t")
         variable_time.value.unit = r"s"
-        variable_velocity = Variable(initial_velocity,"v_0")
+        variable_velocity = Variable(initial_velocity,"v_0",num_decimal_places=0)
         variable_velocity.value.unit = r"m \cdot s^{-1}"
         variable_velocity.next_to(variable_time,DOWN)
-        variable_acceleration = Variable(acceleration,"a")
+        variable_acceleration = Variable(acceleration,"a",num_decimal_places=0)
         variable_acceleration.value.unit = r"m \cdot s^{-2}"
         variable_acceleration.next_to(variable_velocity,DOWN)
         variable_distance = Variable(0, "s = v_0 \cdot t + \dfrac{1}{2} a \cdot t^2")
@@ -67,7 +67,7 @@ class Sila(Scene):
         box_small_mass.add_updater(lambda b: b.move_to(box_small.get_center() + UP*0.5))
         box_small_acceleration = MathTex("a = 1m \cdot s^{-2}")
         box_small_acceleration.add_updater(lambda b: b.move_to(box_small.get_center() + DOWN*0.5))
-        variable_force = Variable(1,"F").shift(LEFT*5 + DOWN*0.75)
+        variable_force = Variable(1,"F",num_decimal_places=0).shift(LEFT*5 + DOWN*0.75)
         variable_force.value.unit = r"N"
         force_formula = MathTex("F = m \cdot a \Rightarrow a = \dfrac{F}{m}")
         force_formula.shift(RIGHT*3.5 + DOWN*0.75)
@@ -79,11 +79,11 @@ class DostredivaSila(Scene):
         center = Dot(point=ORIGIN,radius=0.2)
         rotating_body = Circle(color=WHITE,radius=0.5).shift(UP*3)
         force_arrow = Arrow(start=UP*2.75,end=UP*1)
-        variable_mass = Variable(1,"m").shift(DOWN)
+        variable_mass = Variable(1,"m",num_decimal_places=0).shift(DOWN)
         variable_mass.value.unit = r"kg"
-        variable_velocity = Variable(1,"v").next_to(variable_mass,DOWN)
+        variable_velocity = Variable(1,"v",num_decimal_places=0).next_to(variable_mass,DOWN)
         variable_velocity.value.unit = r"m \cdot s^{-1}"
-        variable_radius = Variable(1,"r").next_to(variable_velocity,DOWN)
+        variable_radius = Variable(1,"r",num_decimal_places=0).next_to(variable_velocity,DOWN)
         variable_radius.value.unit = r"m"
         variable_force = Variable(0,"F_D = \dfrac{mv^2}{r}").next_to(variable_radius,DOWN)
         variable_force.value.unit = r"N"
@@ -124,7 +124,7 @@ class Energia(Scene):
         line = Line(start=UP*4,end=ORIGIN)
         pendulum.rotate(angle=PI/3,about_point=UP*4)
         line.add_updater(lambda l:line.put_start_and_end_on(UP*4,pendulum.get_center()))
-        mass = Variable(1,"m").shift(UP*1.5)
+        mass = Variable(1,"m",num_decimal_places=0).shift(UP*1.5)
         mass.value.unit = "kg"
         acceleration_gravity = Variable(9.81,"g").next_to(mass,DOWN)
         acceleration_gravity.value.unit = "m \cdot s^{-2}"
