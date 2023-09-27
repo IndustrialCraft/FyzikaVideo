@@ -25,6 +25,7 @@ class RPP(Scene):
         variable_velocity.next_to(variable_time,DOWN)
         variable_distance = Variable(0, "s = v \cdot t")
         variable_distance.value.unit = r"m"
+        variable_distance.color = YELLOW
         variable_distance.next_to(variable_velocity,DOWN)
         ball = Circle(radius=0.5,fill_color=RED,fill_opacity=1) 
         ball.shift(LEFT*5+UP*1.5)
@@ -52,6 +53,7 @@ class RZP(Scene):
         variable_acceleration.next_to(variable_velocity,DOWN)
         variable_distance = Variable(0, "s = v_0 \cdot t + \dfrac{1}{2} a \cdot t^2")
         variable_distance.value.unit = r"m"
+        variable_distance.color = YELLOW
         variable_distance.next_to(variable_acceleration,DOWN)
         area_group = Group()
         def area_under_curve_updater(p):
@@ -91,7 +93,7 @@ class DostredivaSila(Scene):
     def construct(self):
         center = Dot(point=ORIGIN,radius=0.2)
         rotating_body = Circle(color=WHITE,radius=0.5).shift(UP*3)
-        force_arrow = Arrow(start=UP*2.75,end=UP*1)
+        force_arrow = Arrow(start=UP*2.75,end=UP*1.5)
         variable_mass = Variable(1,"m",num_decimal_places=0).shift(DOWN)
         variable_mass.value.unit = r"kg"
         variable_velocity = Variable(1,"v",num_decimal_places=0).next_to(variable_mass,DOWN)
@@ -104,7 +106,7 @@ class DostredivaSila(Scene):
         self.add(center,rotating_body,force_arrow,variable_mass,variable_velocity,variable_radius,variable_force)
         self.play(Rotate(rotating_body,angle=2*PI,about_point=ORIGIN),Rotate(force_arrow,angle=2*PI,about_point=ORIGIN),rate_func=linear,run_time=4)
         variable_velocity.tracker.set_value(2)
-        force_arrow.put_start_and_end_on(UP*2.75,ORIGIN)
+        force_arrow.put_start_and_end_on(UP*2.75,UP*0.5)
         self.play(Rotate(rotating_body,angle=2*PI,about_point=ORIGIN),Rotate(force_arrow,angle=2*PI,about_point=ORIGIN),rate_func=linear,run_time=2)
 class Trenie(Scene):
     def construct(self):
@@ -113,24 +115,36 @@ class Trenie(Scene):
         friction_coefficient = Variable(0.41, "f").next_to(angle,DOWN)
         force_gravity = Variable(9.81, "F_g").next_to(friction_coefficient,DOWN)
         force_gravity.value.unit = "N"
+        force_gravity.color = RED
+        force_gravity_arrow = Arrow(color=RED)
         force_1 = Variable(0, r"F_1 = F_g \cdot sin \: \alpha").move_to(DOWN)
+        force_1.color = GREEN
         force_1.value.unit = "N"
+        force_1_arrow = Arrow(color=GREEN)
         force_N = Variable(0,r"F_N = F_g \cdot cos \: \alpha").next_to(force_1,DOWN)
         force_N.value.unit = "N"
+        force_N.color = BLUE
+        force_N_arrow = Arrow(color=BLUE)
         force_T = Variable(0,r"F_t = F_N \cdot f").next_to(force_N,DOWN)
         force_T.value.unit = "N"
+        force_T.color = YELLOW
+        force_T_arrow = Arrow(color=YELLOW)
         force_1.add_updater(lambda f: f.tracker.set_value(force_gravity.tracker.get_value()*math.sin(math.radians(angle.tracker.get_value()))))
         force_N.add_updater(lambda f: f.tracker.set_value(force_gravity.tracker.get_value()*math.cos(math.radians(angle.tracker.get_value()))))
         force_T.add_updater(lambda f: f.tracker.set_value(force_N.tracker.get_value() * 0.41390728476))
         plane = Line(start=LEFT,end=RIGHT*3)
         compare_text = MathTex(r"F_1 < F_t").next_to(force_T,DOWN)
         box = Rectangle(width=1,height=1).shift(UP*0.5+RIGHT*2.5)
-        self.add(angle,plane,force_gravity,force_1,force_N,force_T,friction_coefficient,box,compare_text)
+        force_gravity_arrow.add_updater(lambda a:a.put_start_and_end_on(box.get_center(),box.get_center()+DOWN*(9.81/5)))
+        force_1_arrow.add_updater(lambda a:a.put_start_and_end_on(box.get_center(),box.get_center()+(DOWN*math.sin(math.radians(angle.tracker.get_value()))+LEFT*math.cos(math.radians(angle.tracker.get_value())))*(force_1.tracker.get_value()/5+0.4)))
+        force_N_arrow.add_updater(lambda a:a.put_start_and_end_on(box.get_center(),box.get_center()+(DOWN*math.cos(math.radians(angle.tracker.get_value()))+RIGHT*math.sin(math.radians(angle.tracker.get_value())))*(force_N.tracker.get_value()/5)))
+        force_T_arrow.add_updater(lambda a:a.put_start_and_end_on(box.get_center()+DOWN*0.5*math.cos(math.radians(angle.tracker.get_value()))+RIGHT*0.5*math.sin(math.radians(angle.tracker.get_value())),box.get_center()+DOWN*0.5*math.cos(math.radians(angle.tracker.get_value()))+RIGHT*0.5*math.sin(math.radians(angle.tracker.get_value()))+(UP*math.sin(math.radians(angle.tracker.get_value()))+RIGHT*math.cos(math.radians(angle.tracker.get_value())))*(force_T.tracker.get_value()/5+0.4)))
+        self.add(angle,plane,force_gravity,force_1,force_N,force_T,friction_coefficient,box,compare_text,force_T_arrow,force_gravity_arrow,force_1_arrow,force_N_arrow)
         self.play(angle.tracker.animate.set_value(45/2),Rotate(plane,angle=PI/8,about_point=LEFT), Rotate(box,angle=PI/8,about_point=LEFT), run_time=5, rate_func=linear)
         self.remove(compare_text)
         compare_text = MathTex(r"F_1 = F_t").next_to(force_T,DOWN)
         self.add(compare_text)
-        self.play(box.animate.move_to(LEFT+UP*0.5),run_time=5, rate_func=linear)
+        self.play(box.animate.move_to(LEFT+UP*0.5),run_time=5, rate_func=rush_into)
 class Energia(Scene):
     def construct(self):
         pendulum = Circle(radius=0.5,fill_color=RED,fill_opacity=1).shift(UP*2)
@@ -157,5 +171,5 @@ class Energia(Scene):
         energy.value.unit = "J"
         self.add(pendulum,line,mass,mass,acceleration_gravity,height,energy_potential,energy_kinetic,energy,velocity)
         for _ in range(0,2):
-            self.play(Rotate(pendulum,angle=-PI/3*2,about_point=UP*4),run_time=2,rate_func=smooth)
-            self.play(Rotate(pendulum,angle=PI/3*2,about_point=UP*4),run_time=2,rate_func=smooth)
+            self.play(Rotate(pendulum,angle=-PI/3*2,about_point=UP*4),run_time=2.5,rate_func=smooth)
+            self.play(Rotate(pendulum,angle=PI/3*2,about_point=UP*4),run_time=2.5,rate_func=smooth)
