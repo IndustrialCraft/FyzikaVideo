@@ -13,6 +13,13 @@ class RPP(Scene):
         #distance_group.shift(RIGHT)
         variable_time = Variable(0,"t")
         variable_time.value.unit = r"s"
+        area_group = Group()
+        def area_under_curve_updater(p):
+            if len(p) > 0:
+                p.remove(p[0])
+            area = distance_axes.get_area(graph=distance_graph,x_range=(0,variable_time.tracker.get_value()),color=[YELLOW,YELLOW])
+            p.add(area)
+        area_group.add_updater(area_under_curve_updater)
         variable_velocity = Variable(initial_velocity,"v",num_decimal_places=0)
         variable_velocity.value.unit = r"m \cdot s^{-1}"
         variable_velocity.next_to(variable_time,DOWN)
@@ -21,8 +28,7 @@ class RPP(Scene):
         variable_distance.next_to(variable_velocity,DOWN)
         ball = Circle(radius=0.5,fill_color=RED,fill_opacity=1) 
         ball.shift(LEFT*5)
-        
-        self.add(distance_axes_labels,distance_axes,distance_graph,variable_time,variable_velocity,variable_distance)
+        self.add(area_group,distance_axes_labels,distance_axes,distance_graph,variable_time,variable_velocity,variable_distance)
         self.play(Create(distance_graph_run),ball.animate().shift(RIGHT*10),variable_time.tracker.animate.set_value(animation_length), variable_distance.tracker.animate.set_value(initial_velocity*animation_length), run_time=animation_length, rate_func=linear)
          
 class RZP(Scene):
@@ -47,13 +53,20 @@ class RZP(Scene):
         variable_distance = Variable(0, "s = v_0 \cdot t + \dfrac{1}{2} a \cdot t^2")
         variable_distance.value.unit = r"m"
         variable_distance.next_to(variable_acceleration,DOWN)
+        area_group = Group()
+        def area_under_curve_updater(p):
+            if len(p) > 0:
+                p.remove(p[0])
+            area = distance_axes.get_area(graph=distance_graph,x_range=(0,variable_time.tracker.get_value()),color=[YELLOW,YELLOW])
+            p.add(area)
+        area_group.add_updater(area_under_curve_updater)
         def distance_updater(v):
             time = variable_time.tracker.get_value() 
             v.tracker.set_value(time*initial_velocity+0.5*acceleration*time*time)
         variable_distance.add_updater(distance_updater)
         ball = Circle(radius=0.5,fill_color=RED,fill_opacity=1)
         ball.add_updater(lambda b: b.move_to(LEFT*5+RIGHT*variable_distance.tracker.get_value()*(10/(animation_length*initial_velocity+0.5*acceleration*animation_length**2))))
-        self.add(distance_axes_labels,distance_axes,distance_graph,variable_time,variable_velocity,variable_acceleration,variable_distance,ball)
+        self.add(area_group,distance_axes_labels,distance_axes,distance_graph,variable_time,variable_velocity,variable_acceleration,variable_distance,ball)
         self.play(Create(distance_graph_run),variable_time.tracker.animate.set_value(animation_length),run_time=animation_length,rate_func=linear)
 class Sila(Scene):
     def construct(self):
