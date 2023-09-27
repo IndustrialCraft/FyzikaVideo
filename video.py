@@ -27,14 +27,14 @@ class RPP(Scene):
         variable_distance.value.unit = r"m"
         variable_distance.next_to(variable_velocity,DOWN)
         ball = Circle(radius=0.5,fill_color=RED,fill_opacity=1) 
-        ball.shift(LEFT*5)
+        ball.shift(LEFT*5+UP*1.5)
         self.add(area_group,distance_axes_labels,distance_axes,distance_graph,variable_time,variable_velocity,variable_distance)
         self.play(Create(distance_graph_run),ball.animate().shift(RIGHT*10),variable_time.tracker.animate.set_value(animation_length), variable_distance.tracker.animate.set_value(initial_velocity*animation_length), run_time=animation_length, rate_func=linear)
          
 class RZP(Scene):
     def construct(self):
         initial_velocity = 3
-        acceleration = 1
+        acceleration = 2.5
         animation_length = 5
         distance_axes = Axes(x_range=[0,animation_length,1],y_range=[0,initial_velocity+acceleration*animation_length,1],axis_config={"include_numbers": True},tips=False)
         distance_axes_labels = distance_axes.get_axis_labels(y_label='v[m \cdot s^{-1}]', x_label='t[s]').set_color(WHITE)
@@ -47,7 +47,7 @@ class RZP(Scene):
         variable_velocity = Variable(initial_velocity,"v_0",num_decimal_places=0)
         variable_velocity.value.unit = r"m \cdot s^{-1}"
         variable_velocity.next_to(variable_time,DOWN)
-        variable_acceleration = Variable(acceleration,"a",num_decimal_places=0)
+        variable_acceleration = Variable(acceleration,"a",num_decimal_places=1)
         variable_acceleration.value.unit = r"m \cdot s^{-2}"
         variable_acceleration.next_to(variable_velocity,DOWN)
         variable_distance = Variable(0, "s = v_0 \cdot t + \dfrac{1}{2} a \cdot t^2")
@@ -65,7 +65,7 @@ class RZP(Scene):
             v.tracker.set_value(time*initial_velocity+0.5*acceleration*time*time)
         variable_distance.add_updater(distance_updater)
         ball = Circle(radius=0.5,fill_color=RED,fill_opacity=1)
-        ball.add_updater(lambda b: b.move_to(LEFT*5+RIGHT*variable_distance.tracker.get_value()*(10/(animation_length*initial_velocity+0.5*acceleration*animation_length**2))))
+        ball.add_updater(lambda b: b.move_to(UP*1.5+LEFT*5+RIGHT*variable_distance.tracker.get_value()*(10/(animation_length*initial_velocity+0.5*acceleration*animation_length**2))))
         self.add(area_group,distance_axes_labels,distance_axes,distance_graph,variable_time,variable_velocity,variable_acceleration,variable_distance,ball)
         self.play(Create(distance_graph_run),variable_time.tracker.animate.set_value(animation_length),run_time=animation_length,rate_func=linear)
 class Sila(Scene):
