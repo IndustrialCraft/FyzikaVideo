@@ -73,11 +73,15 @@ class RZP(Scene):
 class Sila(Scene):
     def construct(self):
         box_large = Rectangle(color=RED,fill_color=RED,fill_opacity=1,width=3.5,height=3.5).shift(LEFT*5+UP*2)
+        box_large_arrow = Arrow()
+        box_large_arrow.add_updater(lambda a:a.put_start_and_end_on(box_large.get_center(),box_large.get_center()+RIGHT*3))
         box_large_mass = MathTex("m = 2kg")
         box_large_mass.add_updater(lambda b: b.move_to(box_large.get_center() + UP*0.5))
         box_large_acceleration = MathTex("a = 0.5m \cdot s^{-2}")
         box_large_acceleration.add_updater(lambda b: b.move_to(box_large.get_center() + DOWN*0.5))
         box_small = Rectangle(color=RED,fill_color=RED,fill_opacity=1,width=3,height=2.5).shift(LEFT*5+DOWN*3)
+        box_small_arrow = Arrow()
+        box_small_arrow.add_updater(lambda a:a.put_start_and_end_on(box_small.get_center(),box_small.get_center()+RIGHT*3))
         box_small_mass = MathTex("m = 1kg")
         box_small_mass.add_updater(lambda b: b.move_to(box_small.get_center() + UP*0.5))
         box_small_acceleration = MathTex("a = 1m \cdot s^{-2}")
@@ -86,14 +90,16 @@ class Sila(Scene):
         variable_force.value.unit = r"N"
         force_formula = MathTex("F = m \cdot a \Rightarrow a = \dfrac{F}{m}")
         force_formula.shift(RIGHT*3.5 + DOWN*0.75)
-        self.add(box_large,box_small,box_large_mass,box_small_mass,variable_force,force_formula,box_large_acceleration,box_small_acceleration)
+        self.add(box_large,box_large_arrow,box_small,box_small_arrow,box_large_mass,box_small_mass,variable_force,force_formula,box_large_acceleration,box_small_acceleration)
         self.play(box_large.animate.shift(RIGHT*5),box_small.animate.shift(RIGHT*10),run_time=5,rate_func=rush_into)
 
 class DostredivaSila(Scene):
     def construct(self):
         center = Dot(point=ORIGIN,radius=0.2)
-        rotating_body = Circle(color=WHITE,radius=0.5).shift(UP*3)
+        rotating_body = Circle(color=RED,fill_color=RED,fill_opacity=1,radius=0.5).shift(UP*3)
         force_arrow = Arrow(start=UP*2.75,end=UP*1.5)
+        rope = Line(color=YELLOW,stroke_width=2)
+        rope.add_updater(lambda r:r.put_start_and_end_on(ORIGIN,rotating_body.get_center()))
         variable_mass = Variable(1,"m",num_decimal_places=0).shift(DOWN)
         variable_mass.value.unit = r"kg"
         variable_velocity = Variable(1,"v",num_decimal_places=0).next_to(variable_mass,DOWN)
@@ -103,7 +109,7 @@ class DostredivaSila(Scene):
         variable_force = Variable(0,"F_D = \dfrac{mv^2}{r}").next_to(variable_radius,DOWN)
         variable_force.value.unit = r"N"
         variable_force.add_updater(lambda v: v.tracker.set_value(variable_velocity.tracker.get_value()**2))
-        self.add(center,rotating_body,force_arrow,variable_mass,variable_velocity,variable_radius,variable_force)
+        self.add(rope,center,rotating_body,force_arrow,variable_mass,variable_velocity,variable_radius,variable_force)
         self.play(Rotate(rotating_body,angle=2*PI,about_point=ORIGIN),Rotate(force_arrow,angle=2*PI,about_point=ORIGIN),rate_func=linear,run_time=4)
         variable_velocity.tracker.set_value(2)
         force_arrow.put_start_and_end_on(UP*2.75,UP*0.5)
