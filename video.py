@@ -214,3 +214,29 @@ class Hybnost(Scene):
         group += Circle(radius=0.2,color=WHITE).shift(DOWN*0.7+LEFT*0.8)
         group += Circle(radius=0.2,color=WHITE).shift(DOWN*0.7+RIGHT*0.8)
         return group
+class ElektrickePole(Scene):
+    def construct(self):
+        charges = []
+        for x in range(0,14):
+            for y in range(0,8):
+                arrow = Arrow(start=LEFT*(x-7)+UP*(y-4),end=LEFT*(x-7)+UP*(y-4)+UP*4,max_tip_length_to_length_ratio=0.05)
+                def arrow_updater(a):
+                    vector = np.copy(ORIGIN)
+                    for charge in charges:
+                        diff = charge[0].get_center()-a.get_start() 
+                        vector += normalize(diff)*1000/np.linalg.norm(diff)*charge[1]
+                        #print(str(len(charges)) + "-" + str(charge[0].get_center()) + " - " + str(vector))
+                    a.put_start_and_end_on(a.get_start()+DOWN*0.0001,a.get_start() + normalize(vector)*0.5+UP*0.001)
+                arrow.add_updater(arrow_updater)
+                self.add(arrow)
+        charge_negative = Dot(color=BLUE,radius = 0.2)
+        charges.append((charge_negative,1))
+        self.add(charge_negative)
+        self.play(charge_negative.animate.shift(LEFT*3),run_time=5)
+        charge_positive = Dot(color=BLUE,radius = 0.2)
+        charges.append((charge_positive,1))
+        self.add(charge_positive)
+        self.play(charge_positive.animate.shift(RIGHT*3),run_time=5)
+        charge_positive.color = RED
+        charges[1] = (charges[1][0],-1)
+        self.play(charge_positive.animate.shift(LEFT*3),run_time=5)
