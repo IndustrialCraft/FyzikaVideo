@@ -179,3 +179,38 @@ class Energia(Scene):
         for _ in range(0,2):
             self.play(Rotate(pendulum,angle=-PI/3*2,about_point=UP*4),run_time=2.5,rate_func=smooth)
             self.play(Rotate(pendulum,angle=PI/3*2,about_point=UP*4),run_time=2.5,rate_func=smooth)
+class Hybnost(Scene):
+    def construct(self):
+        first_cart = self.create_cart("1",1)
+        second_cart = self.create_cart("2",2)
+
+        velocity_1 = Variable(1,"v_1").shift(UP+LEFT*1)
+        velocity_1.value.unit = "m \cdot s^{-1}"
+        first_cart += velocity_1
+        velocity_2 = Variable(0,"v_2").shift(UP+LEFT*1)
+        velocity_2.value.unit = "m \cdot s^{-1}"
+        second_cart += velocity_2
+        momentum_total = Variable(1,"p=p_1+p_2").shift(UP*1)
+        momentum_total.value.unit = "kg \cdot m \cdot s^{-1}"
+        momentum_1 = Variable(1,"p_1=m_1 \cdot v_1").next_to(momentum_total,DOWN)
+        momentum_1.value.unit = "kg \cdot m \cdot s^{-1}"
+        momentum_2 = Variable(0,"p_2=m_2 \cdot v_2").next_to(momentum_1,DOWN)
+        momentum_2.value.unit = "kg \cdot m \cdot s^{-1}"
+
+        first_cart.shift(DOWN*3+LEFT*5)
+        second_cart.shift(DOWN*3)
+
+        self.add(first_cart,second_cart,momentum_total,momentum_1,momentum_2)
+        self.play(first_cart.animate.shift(RIGHT*3),run_time=2.5,rate_func=linear)
+        momentum_1.tracker.set_value(0)
+        momentum_2.tracker.set_value(1)
+        velocity_1.tracker.set_value(0)
+        velocity_2.tracker.set_value(0.5)
+        self.play(second_cart.animate.shift(RIGHT*3),run_time=5,rate_func=linear)
+    def create_cart(self,name,weight):
+        group = VGroup()
+        group += Rectangle(width=2,height=1)
+        group += MathTex("m_"+name+"="+str(weight)+"kg")
+        group += Circle(radius=0.2,color=WHITE).shift(DOWN*0.7+LEFT*0.8)
+        group += Circle(radius=0.2,color=WHITE).shift(DOWN*0.7+RIGHT*0.8)
+        return group
